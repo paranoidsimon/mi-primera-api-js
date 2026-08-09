@@ -1,0 +1,66 @@
+### 1) Login correcto
+# @name login_ok
+POST http://localhost:3000/api/login
+Content-Type: application/json
+
+{
+    "user_name": "admin",
+    "password": "1234"
+}
+
+###
+@adminToken = {{login_ok.response.body.$.authorizationToken}}
+
+### 2) Login con usuario incorrecto
+# @name login_user_error
+POST http://localhost:3000/api/login
+Content-Type: application/json
+
+{
+    "user_name": "usuario_inexistente",
+    "password": "1234"
+}
+
+###
+### 3) Login con contraseña incorrecta
+# @name login_password_error
+POST http://localhost:3000/api/login
+Content-Type: application/json
+
+{
+    "user_name": "admin",
+    "password": "contraseña_erronea"
+}
+
+###
+### 4) Acceso protegido con rol admin
+GET http://localhost:3000/api/users
+Authorization: Bearer {{adminToken}}
+
+###
+### 5) Crear usuario con rol admin
+POST http://localhost:3000/api/users
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "user_name": "juan",
+    "password": "1234",
+    "display_name": "Juan Perez",
+    "email": "juan.perez@example.com",
+    "role": "admin"
+}
+
+###
+### 6) Crear usuario con rol user
+POST http://localhost:3000/api/users
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "user_name": "maria",
+    "password": "1234",
+    "display_name": "Maria Lopez",
+    "email": "maria.lopez@example.com",
+    "role": "user"
+}

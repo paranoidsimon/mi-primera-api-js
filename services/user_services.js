@@ -27,4 +27,16 @@ export class UserService {
 
         return this.userRepo.create(user);
     }
+
+    async update(id, userData) {
+        if (userData.password) {
+            userData.password = bcrypt.hashSync(userData.password, 10);
+        }
+
+        return this.userRepo.findByIdAndUpdate(id, userData, { new: true });
+    }
+
+    async delete(id) {
+        return this.userRepo.findByIdAndDelete(id);
+    }
 }

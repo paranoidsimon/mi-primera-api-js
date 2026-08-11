@@ -1,0 +1,48 @@
+### 1) Login como admin
+# @name login_admin
+POST http://localhost:3000/api/login
+Content-Type: application/json
+
+{
+  "user_name": "admin",
+  "password": "1234"
+}
+
+###
+@adminToken = {{login_admin.response.body.$.authorizationToken}}
+
+### 2) Listar productos
+GET http://localhost:3000/api/products
+Authorization: Bearer {{adminToken}}
+
+###
+### 3) Crear producto (solo admin)
+# @name create_product
+POST http://localhost:3000/api/products
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "Teclado",
+  "price": 150,
+  "description": "Teclado mecánico",
+  "stock": 10
+}
+
+###
+@createdProductId = {{create_product.response.body.$._id}}
+
+### 4) Actualizar producto
+PUT http://localhost:3000/api/products/{{createdProductId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "price": 180,
+  "stock": 5
+}
+
+###
+### 5) Eliminar producto
+DELETE http://localhost:3000/api/products/{{createdProductId}}
+Authorization: Bearer {{adminToken}}

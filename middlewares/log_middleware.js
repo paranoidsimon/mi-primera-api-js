@@ -1,4 +1,5 @@
 export default async function logMiddleware(req, res, next) {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.url} ${req.session ? `(user: ${req.session.user_name})` : "(no auth)"}`);
+    const username = req.session?.username || req.session?.user_name || req.session?.user || req.session?.userName || "anonymous";
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.url} ${req.session ? `(user: ${username})` : "(no auth)"}`);
     next();
 }

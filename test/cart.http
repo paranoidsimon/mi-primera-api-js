@@ -1,0 +1,69 @@
+### 1) Login admin para crear producto
+# @name login_admin
+POST http://localhost:3000/api/login
+Content-Type: application/json
+X-Test-Token: true
+
+{
+    "user_name": "admin",
+    "password": "1234"
+}
+
+###
+@adminToken = {{login_admin.response.body.$.authorizationToken}}
+
+### 2) Crear producto para la compra del usuario común
+# @name create_product
+POST http://localhost:3000/api/products
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "Producto de prueba",
+    "price": 100,
+    "description": "Producto para test de carrito",
+    "stock": 10
+}
+
+###
+@productId = {{create_product.response.body._id}}
+
+### 3) Login usuario común
+# @name login_user
+POST http://localhost:3000/api/login
+Content-Type: application/json
+X-Test-Token: true
+
+{
+    "user_name": "maria",
+    "password": "1234"
+}
+
+###
+@userToken = {{login_user.response.body.$.authorizationToken}}
+
+### 4) Agregar producto al carrito como usuario común
+POST http://localhost:3000/api/cart/items
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+    "productId": "{{productId}}",
+    "quantity": 1
+}
+
+### 5) Ver carrito del usuario común
+GET http://localhost:3000/api/cart
+Authorization: Bearer {{userToken}}
+
+### 6) Realizar checkout del carrito
+POST http://localhost:3000/api/purchases/checkout
+Authorization: Bearer {{userToken}}
+
+### 7) Ver historial de compras del usuario común
+GET http://localhost:3000/api/purchases
+Authorization: Bearer {{userToken}}
+
+### 8) Ver carrito vacío después del checkout
+GET http://localhost:3000/api/cart
+Authorization: Bearer {{userToken}}

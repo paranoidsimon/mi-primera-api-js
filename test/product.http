@@ -2,6 +2,7 @@
 # @name login_admin
 POST http://localhost:3000/api/login
 Content-Type: application/json
+X-Test-Token: true
 
 {
   "user_name": "admin",
@@ -11,19 +12,38 @@ Content-Type: application/json
 ###
 @adminToken = {{login_admin.response.body.$.authorizationToken}}
 
-### 2) Listar productos
+### 2) Listar productos como admin
 GET http://localhost:3000/api/products
 Authorization: Bearer {{adminToken}}
 
 ###
-### 3) Crear producto (solo admin)
+### 3) Login como usuario común
+# @name login_user
+POST http://localhost:3000/api/login
+Content-Type: application/json
+X-Test-Token: true
+
+{
+  "user_name": "maria",
+  "password": "1234"
+}
+
+###
+@userToken = {{login_user.response.body.$.authorizationToken}}
+
+### 4) Listar productos como usuario común (sin id ni fecha de creación)
+GET http://localhost:3000/api/products
+Authorization: Bearer {{userToken}}
+
+###
+### 5) Crear producto (solo admin)
 # @name create_product
 POST http://localhost:3000/api/products
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-  "name": "Teclado",
+  "name": "Tecladii",
   "price": 150,
   "description": "Teclado mecánico",
   "stock": 10
@@ -32,7 +52,20 @@ Content-Type: application/json
 ###
 @createdProductId = {{create_product.response.body.$._id}}
 
-### 4) Actualizar producto
+### 6) Intentar crear producto como usuario común (debe fallar con 403)
+POST http://localhost:3000/api/products
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "name": "Producto no permitido",
+  "price": 999,
+  "description": "No debería crearse",
+  "stock": 1
+}
+
+###
+### 7) Actualizar producto
 PUT http://localhost:3000/api/products/{{createdProductId}}
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
@@ -43,6 +76,8 @@ Content-Type: application/json
 }
 
 ###
-### 5) Eliminar producto
+### 8) Eliminar producto
 DELETE http://localhost:3000/api/products/{{createdProductId}}
 Authorization: Bearer {{adminToken}}
+
+

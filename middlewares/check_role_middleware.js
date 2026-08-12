@@ -1,6 +1,6 @@
 export default function checkRoleMiddleware(requiredRole) {
     return async function (req, res, next) {
-        if (!req.session) { 
+        if (!req.session?.role) {
             res.status(401).json({ error: "Unauthorized" });
             return;
         }

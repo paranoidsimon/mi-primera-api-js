@@ -16,6 +16,29 @@ export function configureUserRouter(router) {
         })));
     });
 
+    router.get("/users/me", async (req, res) => {
+        if (!req.session) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+
+        const username = req.session.username || req.session.user_name || req.session.user || req.session.userName;
+        if (!username) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+
+        const user = await userService.getByUserName(username);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        res.json({
+            username: user.user_name,
+            displayName: user.display_name,
+            email: user.email,
+            role: user.role,
+        });
+    });
+
     router.post("/users", checkRoleMiddleware(["admin"]), async (req, res) => {
         const user = await getDependency("userService").add(req.body);
         if (!user) return res.status(409).json({ error: "Usuario ya existe" });

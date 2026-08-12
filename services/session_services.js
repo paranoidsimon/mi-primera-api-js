@@ -7,5 +7,13 @@ export class SessionService {
 
     async getByToken(token) {
         return await this.sessionRepo.findOne({ authorizationToken: token });
-    }   
+    }
+
+    async deleteByToken(token) {
+        if (!token) {
+            return null;
+        }
+
+        return await this.sessionRepo.deleteOne({ authorizationToken: token });
+    }
 }

@@ -10,6 +10,10 @@ export class UserService {
         return await this.userRepo.find();
     }
 
+    async getByUserName(userName) {
+        return this.userRepo.findOne({ user_name: userName });
+    }
+
     async add(user) {
         if (!user.user_name)
             throw new Error("El nombre de usuario es obligatorio");

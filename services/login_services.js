@@ -44,9 +44,12 @@ export class LoginService {
         });
 
         return {
-            authorizationToken: session.authorizationToken,
-            username: session.username,
-            role: session.role,
+            payload: {
+                username: session.username,
+                role: session.role,
+                message: "Login exitoso"
+            },
+            authorizationToken: session.authorizationToken
         };
     }
 }

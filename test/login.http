@@ -1,7 +1,37 @@
+### Admin: login
+# @name login_admin
 POST http://localhost:3000/api/login
 Content-Type: application/json
+x-test-token: true
 
 {
     "user_name": "admin",
     "password": "1234"
 }
+
+###
+@adminToken = {{login_admin.response.body.$.authorizationToken}}
+
+### Admin: logout
+POST http://localhost:3000/api/logout
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+### Maria: login
+# @name login_user
+POST http://localhost:3000/api/login
+Content-Type: application/json
+x-test-token: true
+
+{
+    "user_name": "maria",
+    "password": "1234"
+}
+
+###
+@userToken = {{login_user.response.body.$.authorizationToken}}
+
+### Maria: logout
+POST http://localhost:3000/api/logout
+Content-Type: application/json
+Authorization: Bearer {{userToken}}

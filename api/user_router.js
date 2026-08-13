@@ -1,6 +1,7 @@
 import { getDependency } from "../dependency.js";
 import checkRoleMiddleware from "../middlewares/check_role_middleware.js";
-import mongoose from "mongoose";
+import requireSessionUserMiddleware from "../middlewares/require_session_user_middleware.js";
+import validateObjectIdMiddleware from "../middlewares/validate_object_id_middleware.js";
 
 export function configureUserRouter(router) {
     const userService = getDependency("userService");
@@ -16,17 +17,8 @@ export function configureUserRouter(router) {
         })));
     });
 
-    router.get("/users/me", async (req, res) => {
-        if (!req.session) {
-            return res.status(401).json({ error: "Unauthorized" });
-        }
-
-        const username = req.session.username || req.session.user_name || req.session.user || req.session.userName;
-        if (!username) {
-            return res.status(401).json({ error: "Unauthorized" });
-        }
-
-        const user = await userService.getByUserName(username);
+    router.get("/users/me", requireSessionUserMiddleware, async (req, res) => {
+        const user = await userService.getByUserName(req.session.username);
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
@@ -40,17 +32,12 @@ export function configureUserRouter(router) {
     });
 
     router.post("/users", checkRoleMiddleware(["admin"]), async (req, res) => {
-        const user = await getDependency("userService").add(req.body);
+        const user = await userService.add(req.body);
         if (!user) return res.status(409).json({ error: "Usuario ya existe" });
         res.status(201).json({ id: user.id, name: user.name });
     });
 
-    router.put("/users/:id", checkRoleMiddleware(["admin"]), async (req, res) => {
-        const userService = getDependency("userService");
-        if (!mongoose.isValidObjectId(req.params.id)) {
-            return res.status(400).json({ error: "Invalid user id" });
-        }
-
+    router.put("/users/:id", checkRoleMiddleware(["admin"]), validateObjectIdMiddleware("id"), async (req, res) => {
         const updatedUser = await userService.update(req.params.id, req.body);
         if (!updatedUser) {
             return res.status(404).json({ error: "User not found" });
@@ -58,12 +45,7 @@ export function configureUserRouter(router) {
         res.json({ id: updatedUser.id, name: updatedUser.name });
     });
 
-    router.patch("/users/:id", checkRoleMiddleware(["admin"]), async (req, res) => {
-        const userService = getDependency("userService");
-        if (!mongoose.isValidObjectId(req.params.id)) {
-            return res.status(400).json({ error: "Invalid user id" });
-        }
-
+    router.patch("/users/:id", checkRoleMiddleware(["admin"]), validateObjectIdMiddleware("id"), async (req, res) => {
         const updatedUser = await userService.update(req.params.id, req.body);
         if (!updatedUser) {
             return res.status(404).json({ error: "User not found" });
@@ -71,12 +53,7 @@ export function configureUserRouter(router) {
         res.json({ id: updatedUser.id, name: updatedUser.name });
     });
 
-    router.delete("/users/:id", checkRoleMiddleware(["admin"]), async (req, res) => {
-        const userService = getDependency("userService");
-        if (!mongoose.isValidObjectId(req.params.id)) {
-            return res.status(400).json({ error: "Invalid user id" });
-        }
-
+    router.delete("/users/:id", checkRoleMiddleware(["admin"]), validateObjectIdMiddleware("id"), async (req, res) => {
         const deletedUser = await userService.delete(req.params.id);
         if (!deletedUser) {
             return res.status(404).json({ error: "User not found" });

@@ -19,14 +19,14 @@ Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-    "name": "Producto de prueba",
+    "name": "Producto para comprar",
     "price": 100,
     "description": "Producto para test de carrito",
     "stock": 10
 }
 
 ###
-@productId = {{create_product.response.body._id}}
+@productId = {{create_product.response.body.$._id}}
 
 ### 3) Login usuario común
 # @name login_user
@@ -49,7 +49,7 @@ Content-Type: application/json
 
 {
     "productId": "{{productId}}",
-    "quantity": 1
+    "quantity": 2
 }
 
 ### 5) Ver carrito del usuario común
@@ -67,3 +67,13 @@ Authorization: Bearer {{userToken}}
 ### 8) Ver carrito vacío después del checkout
 GET http://localhost:3000/api/cart
 Authorization: Bearer {{userToken}}
+
+###
+### 9) Logout usuario normal
+POST http://localhost:3000/api/logout
+Authorization: Bearer {{userToken}}
+
+###
+### 10) Logout admin
+POST http://localhost:3000/api/logout
+Authorization: Bearer {{adminToken}}

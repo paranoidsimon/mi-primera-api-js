@@ -43,7 +43,7 @@ Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-  "name": "Tecladou",
+  "name": "Teclado grande",
   "price": 150,
   "description": "Teclado mecánico",
   "stock": 10
@@ -82,12 +82,22 @@ Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-  "description": "Teclado mecánico actualizado"
+  "description": "Teclado grande actualizado"
 }
 
 ###
 ### 9) Eliminar producto
 DELETE http://localhost:3000/api/products/{{createdProductId}}
 Authorization: Bearer {{adminToken}}
+
+###
+### 10) Logout admin
+POST http://localhost:3000/api/logout
+Authorization: Bearer {{adminToken}}
+
+###
+### 11) Logout usuario normal
+POST http://localhost:3000/api/logout
+Authorization: Bearer {{userToken}}
 
 

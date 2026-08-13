@@ -36,6 +36,27 @@ export function configureCartRouter(router) {
         }
     });
 
+    router.patch("/cart/items/:productId", async (req, res) => {
+        if (!req.session || req.session.role === "guest") {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+
+        try {
+            const cart = await cartService.updateItemQuantity(req.session.username, req.params.productId, req.body);
+            if (!cart) {
+                return res.status(404).json({ error: "Carrito no encontrado" });
+            }
+
+            res.json({
+                user: req.session.username,
+                items: cart.items,
+                total: cartService.getTotal(cart),
+            });
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    });
+
     router.delete("/cart/items/:productId", async (req, res) => {
         if (!req.session || req.session.role === "guest") {
             return res.status(401).json({ error: "Unauthorized" });

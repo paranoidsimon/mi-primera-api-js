@@ -49,31 +49,51 @@ Content-Type: application/json
 
 {
     "productId": "{{productId}}",
-    "quantity": 2
+    "quantity": 3
 }
 
 ### 5) Ver carrito del usuario común
 GET http://localhost:3000/api/cart
 Authorization: Bearer {{userToken}}
 
-### 6) Realizar checkout del carrito
+###
+### 6) Editar cantidad de un producto dentro del carrito
+PATCH http://localhost:3000/api/cart/items/{{productId}}
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+    "quantity": 1
+}
+
+###
+### 7) Eliminar un producto del carrito
+DELETE http://localhost:3000/api/cart/items/{{productId}}
+Authorization: Bearer {{userToken}}
+
+###
+### 8) Ver carrito después de editar/eliminar
+GET http://localhost:3000/api/cart
+Authorization: Bearer {{userToken}}
+
+### 9) Realizar checkout del carrito
 POST http://localhost:3000/api/purchases/checkout
 Authorization: Bearer {{userToken}}
 
-### 7) Ver historial de compras del usuario común
+### 10) Ver historial de compras del usuario común
 GET http://localhost:3000/api/purchases
 Authorization: Bearer {{userToken}}
 
-### 8) Ver carrito vacío después del checkout
+### 11) Ver carrito vacío después del checkout
 GET http://localhost:3000/api/cart
 Authorization: Bearer {{userToken}}
 
 ###
-### 9) Logout usuario normal
+### 12) Logout usuario normal
 POST http://localhost:3000/api/logout
 Authorization: Bearer {{userToken}}
 
 ###
-### 10) Logout admin
+### 13) Logout admin
 POST http://localhost:3000/api/logout
 Authorization: Bearer {{adminToken}}

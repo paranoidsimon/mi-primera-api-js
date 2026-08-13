@@ -49,6 +49,28 @@ export class CartService {
         return cart;
     }
 
+    async updateItemQuantity(userName, productId, data = {}) {
+        const quantity = Number(data.quantity ?? 0);
+        if (!Number.isFinite(quantity) || quantity <= 0) {
+            throw new Error("La cantidad debe ser mayor a cero");
+        }
+
+        const cart = await this.cartRepo.findOne({ user_name: userName });
+        if (!cart) {
+            return null;
+        }
+
+        const itemIndex = cart.items.findIndex(item => item.productId.toString() === productId.toString());
+        if (itemIndex === -1) {
+            return cart;
+        }
+
+        cart.items[itemIndex].quantity = quantity;
+        cart.updatedAt = new Date();
+        await cart.save();
+        return cart;
+    }
+
     async removeItem(userName, productId) {
         const cart = await this.cartRepo.findOne({ user_name: userName });
         if (!cart) {

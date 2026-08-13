@@ -48,6 +48,23 @@ export function configureProductRouter(router) {
         res.json(updatedProduct);
     });
 
+    router.patch("/products/:id", async (req, res) => {
+        if (!req.session || req.session.role !== "admin") {
+            return res.status(403).json({ error: "Forbidden" });
+        }
+
+        if (!mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({ error: "Invalid product id" });
+        }
+
+        const updatedProduct = await productService.update(req.params.id, req.body);
+        if (!updatedProduct) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+
+        res.json(updatedProduct);
+    });
+
     router.delete("/products/:id", async (req, res) => {
         if (!req.session || req.session.role !== "admin") {
             return res.status(403).json({ error: "Forbidden" });

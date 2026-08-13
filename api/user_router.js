@@ -58,6 +58,19 @@ export function configureUserRouter(router) {
         res.json({ id: updatedUser.id, name: updatedUser.name });
     });
 
+    router.patch("/users/:id", checkRoleMiddleware(["admin"]), async (req, res) => {
+        const userService = getDependency("userService");
+        if (!mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({ error: "Invalid user id" });
+        }
+
+        const updatedUser = await userService.update(req.params.id, req.body);
+        if (!updatedUser) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        res.json({ id: updatedUser.id, name: updatedUser.name });
+    });
+
     router.delete("/users/:id", checkRoleMiddleware(["admin"]), async (req, res) => {
         const userService = getDependency("userService");
         if (!mongoose.isValidObjectId(req.params.id)) {

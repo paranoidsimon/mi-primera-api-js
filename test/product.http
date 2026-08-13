@@ -43,7 +43,7 @@ Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-  "name": "Tecladii",
+  "name": "Tecladou",
   "price": 150,
   "description": "Teclado mecánico",
   "stock": 10
@@ -76,7 +76,17 @@ Content-Type: application/json
 }
 
 ###
-### 8) Eliminar producto
+### 8) Actualizar parcialmente producto con PATCH
+PATCH http://localhost:3000/api/products/{{createdProductId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "description": "Teclado mecánico actualizado"
+}
+
+###
+### 9) Eliminar producto
 DELETE http://localhost:3000/api/products/{{createdProductId}}
 Authorization: Bearer {{adminToken}}
 

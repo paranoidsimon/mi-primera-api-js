@@ -60,17 +60,28 @@ Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-    "user_name": "juancito",
+    "user_name": "fernando",
     "password": "1234",
-    "display_name": "Juan Perez",
-    "email": "juan.perez@example.com",
-    "role": "admin"
+    "display_name": "Fernando Perez",
+    "email": "fer.perez@example.com",
+    "role": "user"
 }
 
 ###
 @createdUserId = {{create_user.response.body.$.id}}
 
-### 7) Crear usuario con rol user usando usuario normal (debe fallar con 403)
+### 7) Editar parcialmente un usuario con PATCH (solo admin)
+PATCH http://localhost:3000/api/users/{{createdUserId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "display_name": "Fernando Perez Actualizado",
+    "email": "fer.actualizado@example.com"
+}
+
+###
+### 8) Crear usuario con rol user usando usuario normal (debe fallar con 403)
 POST http://localhost:3000/api/users
 Authorization: Bearer {{userToken}}
 Content-Type: application/json
@@ -84,41 +95,41 @@ Content-Type: application/json
 }
 
 ###
-### 8) Eliminar usuario con rol admin (debe funcionar)
+### 9) Eliminar usuario con rol admin (debe funcionar)
 DELETE http://localhost:3000/api/users/{{createdUserId}}
 Authorization: Bearer {{adminToken}}
 
 ###
-### 9) Eliminar usuario con rol user (debe fallar con 403)
+### 10) Eliminar usuario con rol user (debe fallar con 403)
 DELETE http://localhost:3000/api/users/3
 Authorization: Bearer {{userToken}}
 
 ###
-### 10) Ver mi propio perfil como usuario común (sin id ni contraseña)
+### 11) Ver mi propio perfil como usuario común (sin id ni contraseña)
 GET http://localhost:3000/api/users/me
 Authorization: Bearer {{userToken}}
 
 ###
-### 11) Comprobar que el usuario fue efectivamente eliminado de la db
+### 12) Comprobar que el usuario fue efectivamente eliminado de la db
 GET http://localhost:3000/api/users
 Authorization: Bearer {{adminToken}}
 
 ###
-### 12) Logout admin
+### 13) Logout admin
 POST http://localhost:3000/api/logout
 Authorization: Bearer {{adminToken}}
 
 ###
-### 13) Admin tras logout: acceso protegido debe fallar
+### 14) Admin tras logout: acceso protegido debe fallar
 GET http://localhost:3000/api/users
 Authorization: Bearer {{adminToken}}
 
 ###
-### 14) Logout usuario normal
+### 15) Logout usuario normal
 POST http://localhost:3000/api/logout
 Authorization: Bearer {{userToken}}
 
 ###
-### 15) Usuario normal tras logout: ver perfil debe fallar
+### 16) Usuario normal tras logout: ver perfil debe fallar
 GET http://localhost:3000/api/users/me
 Authorization: Bearer {{userToken}}
